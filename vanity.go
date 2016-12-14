@@ -27,19 +27,6 @@ import (
 	"github.com/zhi-ming-zhang/go-vanity/crypto/secp256k1"
 )
 
-// Example run:
-//
-// $ go run vanieth.go 1234
-//
-// Address found:
-// addr: 123411cc4a2e2e3238ee8e22d0d7b3cf2c8add9c
-// pvt: 208439bf49edbc236bcffaa831e32006b91e6251150992fe5e704a3c3870415d
-//
-// https://github.com/ethereum/go-ethereum
-//
-
-// "main" method, generates a public key,  address
-//
 func addrGen(toMatch string) {
 	publicKey, privateKey := secp256k1.GenerateKeyPair()
 	addrStr := crypto.PubkeyToAddress(publicKey)
