@@ -19,4 +19,4 @@ exiting...
 ```
 
 ## Donate:
-Bitcoin: 123MuVY8BfY9opQbEH4tbxMoFr6yWir36Q
+Bitcoin: 1zmC25jMTBsJeB5WS9vXqGY3WbcEGysHd
