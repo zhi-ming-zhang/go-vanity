@@ -28,20 +28,20 @@ import (
 )
 
 func addrGen(toMatch string) {
-	publicKey, privateKey := secp256k1.GenerateKeyPair()
-	addrStr := crypto.PubkeyToAddress(publicKey)
-	addrMatch(addrStr, toMatch, privateKey)
+	pubkey65, seckey := secp256k1.GenerateKeyPair()
+	addrStr := crypto.PubkeyToAddr(pubkey65)
+	addrMatch(addrStr, toMatch, seckey)
 }
 
 // tries to match the address with the string provided by the user, exits if successful
 //
-func addrMatch(addrStr string, toMatch string, privateKey []byte) {
+func addrMatch(addrStr string, toMatch string, seckey []byte) {
 	toMatch = strings.ToLower(toMatch)
 	addrStrMatch := strings.TrimPrefix(addrStr, toMatch)
 	found := addrStrMatch != addrStr
 	if found {
 		// fmt.Println("pub:", hex.EncodeToString(crypto.FromECDSAPub(&key.PublicKey))) // uncomment if you want the public key
-		keyStr := crypto.SeckeyToStr(privateKey)
+		keyStr := crypto.SeckeyToWIF(seckey)
 		addrFound(addrStr, keyStr)
 		os.Exit(0) // here the program exits when it found a match
 	}

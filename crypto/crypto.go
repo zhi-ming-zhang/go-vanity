@@ -44,56 +44,16 @@ func GenerateKey() (*ecdsa.PrivateKey, error) {
 	return ecdsa.GenerateKey(secp256k1.S256(), rand.Reader)
 }
 
-func SeckeyToStr(seckey []byte) string {
+func SeckeyToWIF(seckey []byte) string {
 	var varsionNum []byte = append([]byte{0x80}, seckey...)
 	checksumHash := Sha256(Sha256(varsionNum))
-	var all []byte = append(varsionNum, checksumHash[:4]...)
 
-	return base58.Encode(all)
+	return base58.Encode(append(varsionNum, checksumHash[:4]...))
 }
 
-func PubkeyToAddress(publicKey []byte) string {
-	// 0 - Private ECDSA Key
-	//fmt.Printf("0 - Private ECDSA Key: \n\t%X\n", privateKey)
+func PubkeyToAddr(pubkey65 []byte) string {
+	hash160 := append([]byte{0x00}, Ripemd160(Sha256(pubkey65))...)
+	hash2s := Sha256(Sha256(hash160))
 
-	// 1 - Public ECDSA Key
-	//fmt.Printf("1 - Public ECDSA Key: \n\t%X\n", publicKey)
-
-	// 2 - SHA-256 hash of 1
-	hashPubKey := Sha256(publicKey)
-	//fmt.Printf("2 - SHA-256 hash of 1: \n\t%X\n", hashPubKey)
-
-	// 3 - RIPEMD-160 Hash of 2
-
-	var ripemd160hash []byte = Ripemd160(hashPubKey)
-	//fmt.Printf("3 - RIPEMD-160 Hash of 2: \n\t%X\n", ripemd160hash)
-
-	// 4 - Adding network bytes to 3
-	var networkByteAndRipemd160hash []byte = append([]byte{0x00}, ripemd160hash...)
-	//fmt.Printf("4 - Adding network bytes to 3: \n\t%X\n", networkByteAndRipemd160hash)
-
-	// 5 - SHA-256 hash of 4
-	// 445C7A8007A93D8733188288BB320A8FE2DEBD2AE1B47F0F50BC10BAE845C094
-
-	hashOfStepFour := Sha256(networkByteAndRipemd160hash)
-	//fmt.Printf("5 - SHA-256 hash of 4: \n\t%X\n", hashOfStepFour)
-
-	// 6 - SHA-256 hash of 5
-	hashOfStep5 := sha256.Sum256(hashOfStepFour)
-	hashOfStepFive := hashOfStep5[:]
-	//fmt.Printf("6 - SHA-256 hash of 5: \n\t%X\n", hashOfStepFive)
-
-	// 7 - First four bytes of 6
-	var first4ofStep6 []byte = hashOfStepFive[:4]
-	//fmt.Printf("7 - First four bytes of 6: \n\t%X\n", first4ofStep6)
-
-	// 8 - Adding 7 at the end of 4
-	var fourAddSeven []byte = append(networkByteAndRipemd160hash, first4ofStep6...)
-	//fmt.Printf("8 - Adding 7 at the end of 4: \n\t%X\n", fourAddSeven)
-
-	// 9 - Base58 encoding of 8
-	base58of8 := base58.Encode(fourAddSeven)
-	//fmt.Printf("9 - Base58 encoding of 8: \n\t%s\n", base58of8)
-
-	return base58of8
+	return base58.Encode(append(hash160, hash2s[:4]...))
 }
