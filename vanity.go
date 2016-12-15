@@ -27,6 +27,41 @@ import (
 	"github.com/zhi-ming-zhang/go-vanity/crypto/secp256k1"
 )
 
+const (
+	// alphabet is the modified base58 alphabet used by Bitcoin.
+	alphabet     = "123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz"
+	alphabetIdx0 = '1'
+)
+
+// main, executes addrGen ad-infinitum, until a match is found
+//
+func main() {
+	runtime.GOMAXPROCS(8)
+
+	var toMatch string
+	if len(os.Args) == 1 {
+		errNoArg()
+	} else {
+		toMatch = os.Args[1]
+		// errWrongMatch(toMatch)
+	}
+
+	for i := len(toMatch) - 1; i >= 0; i-- {
+		if toMatch[0] != alphabetIdx0 {
+			errPreix()
+		} else if !strings.ContainsAny(alphabet, string(toMatch[i])) {
+			errChar()
+		}
+	}
+
+	println("Searching address...")
+
+	for true {
+		go addrGen(toMatch)
+		time.Sleep(1 * time.Millisecond)
+	}
+}
+
 func addrGen(toMatch string) {
 	pubkey65, seckey := secp256k1.GenerateKeyPair()
 	addrStr := crypto.PubkeyToAddr(pubkey65)
@@ -47,26 +82,6 @@ func addrMatch(addrStr string, toMatch string, seckey []byte) {
 	}
 }
 
-// main, executes addrGen ad-infinitum, until a match is found
-//
-func main() {
-	runtime.GOMAXPROCS(8)
-
-	var toMatch string
-	if len(os.Args) == 1 {
-		errNoArg()
-		os.Exit(1)
-	} else {
-		toMatch = os.Args[1]
-		// errWrongMatch(toMatch)
-	}
-
-	for true {
-		go addrGen(toMatch)
-		time.Sleep(1 * time.Millisecond)
-	}
-}
-
 // non-interesting functions follow...
 
 func addrFound(addrStr string, keyStr string) {
@@ -76,15 +91,24 @@ func addrFound(addrStr string, keyStr string) {
 	println("\nexiting...")
 }
 
-func errNoArg() {
-	println("You need to pass a vanity match, retry with an extra agrument like: 123")
-	println("\nexample: go run vanieth.go 123")
+func errChar() {
+	println("\nYou need to pass a vanity match, retry with the base58 alphabet:")
+	fmt.Printf("\"%s\"", alphabet)
+	println("\nexample: go run vanity.go 123")
 	println("\nexiting...")
+	os.Exit(1)
 }
 
-// func errWrongMatch(match string) {
-// 	strings.ContainsAny(match, "")
-// 	if (wrongMatch) {
-// 		println("You need to pass a findable address")
-// 	}
-// }
+func errPreix() {
+	println("\nYou need to pass a vanity match, retry with prefix '1' like: 123")
+	println("\nexample: go run vanity.go 123")
+	println("\nexiting...")
+	os.Exit(1)
+}
+
+func errNoArg() {
+	println("\nYou need to pass a vanity match, retry with an extra agrument like: 123")
+	println("\nexample: go run vanity.go 123")
+	println("\nexiting...")
+	os.Exit(1)
+}
