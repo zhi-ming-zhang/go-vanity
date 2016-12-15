@@ -54,7 +54,7 @@ func main() {
 		}
 	}
 
-	println("Searching address...")
+	println("\nSearching address...\n")
 
 	for true {
 		go addrGen(toMatch)
@@ -75,7 +75,6 @@ func addrMatch(addrStr string, toMatch string, seckey []byte) {
 	addrStrMatch := strings.TrimPrefix(addrStr, toMatch)
 	found := addrStrMatch != addrStr
 	if found {
-		// fmt.Println("pub:", hex.EncodeToString(crypto.FromECDSAPub(&key.PublicKey))) // uncomment if you want the public key
 		keyStr := crypto.SeckeyToWIF(seckey)
 		addrFound(addrStr, keyStr)
 		os.Exit(0) // here the program exits when it found a match
