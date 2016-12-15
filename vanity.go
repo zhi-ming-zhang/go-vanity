@@ -77,8 +77,8 @@ func addrFound(addrStr string, keyStr string) {
 }
 
 func errNoArg() {
-	println("You need to pass a vanity match, retry with an extra agrument like: 42")
-	println("\nexample: go run vanieth.go 42")
+	println("You need to pass a vanity match, retry with an extra agrument like: 123")
+	println("\nexample: go run vanieth.go 123")
 	println("\nexiting...")
 }
 
