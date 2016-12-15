@@ -43,14 +43,13 @@ func main() {
 		errNoArg()
 	} else {
 		toMatch = os.Args[1]
-		// errWrongMatch(toMatch)
 	}
 
 	for i := len(toMatch) - 1; i >= 0; i-- {
 		if toMatch[0] != alphabetIdx0 {
 			errPreix()
 		} else if !strings.ContainsAny(alphabet, string(toMatch[i])) {
-			errChar()
+			errChar(string(toMatch[i]))
 		}
 	}
 
@@ -71,7 +70,6 @@ func addrGen(toMatch string) {
 // tries to match the address with the string provided by the user, exits if successful
 //
 func addrMatch(addrStr string, toMatch string, seckey []byte) {
-	toMatch = strings.ToLower(toMatch)
 	addrStrMatch := strings.TrimPrefix(addrStr, toMatch)
 	found := addrStrMatch != addrStr
 	if found {
@@ -90,7 +88,8 @@ func addrFound(addrStr string, keyStr string) {
 	println("\nexiting...")
 }
 
-func errChar() {
+func errChar(char string) {
+	fmt.Printf("\nPlease do not use \"%s\".", char)
 	println("\nYou need to pass a vanity match, retry with the base58 alphabet:")
 	fmt.Printf("\"%s\"", alphabet)
 	println("\nexample: go run vanity.go 123")
